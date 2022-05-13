@@ -1,31 +1,39 @@
-const mongoose = require('mongoose');
-const fastify = require('fastify')();
-const routes = require('./routes');
-const path = require('path')
-const {parsed : {MONGO_ATLAS_PW}} = require('dotenv').config();
-const DistPath = path.join(__dirname, '..', 'dist')
+const mongoose = require("mongoose");
+const fastify = require("fastify")();
+const routes = require("./routes");
+const path = require("path");
+const {
+    parsed: { MONGO_ATLAS_USER, MONGO_ATLAS_PW },
+} = require("dotenv").config();
 
-fastify.register(require('fastify-static'), {
-  root: DistPath,
-})
+const DistPath = path.join(__dirname, "..", "dist");
 
-mongoose.connect(`mongodb+srv://userx:${MONGO_ATLAS_PW}@cluster0-ufv5h.azure.mongodb.net/test?retryWrites=true`, { useFindAndModify: false, useNewUrlParser: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch(e => console.log('MongoDB could not be connected due to ', e));
-
-fastify.get('/', async (request, reply) => {
-  try {
-    reply.sendFile('index.html')
-  }
-  catch (e) { console.log(e) }
+fastify.register(require("fastify-static"), {
+    root: DistPath,
 });
 
-routes.forEach(route => fastify.route(route))
+mongoose
+    .connect(
+        `mongodb+srv://${MONGO_ATLAS_USER}:${MONGO_ATLAS_PW}@nodejs.9xfhw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`,
+        { useFindAndModify: false, useNewUrlParser: true }
+    )
+    .then(() => console.log("MongoDB connected"))
+    .catch((e) => console.log("MongoDB could not be connected due to ", e));
 
-fastify.listen(process.env.PORT || 3000, '0.0.0.0', (err) => {
-  if (err) {
-    fastify.log.error(err);
-    process.exit(1);
-  }
-  console.log(`server running at ${fastify.server.address().port}`)
-})
+fastify.get("/", async (request, reply) => {
+    try {
+        reply.sendFile("index.html");
+    } catch (e) {
+        console.log(e);
+    }
+});
+
+routes.forEach((route) => fastify.route(route));
+
+fastify.listen(process.env.PORT || 3001, "0.0.0.0", (err) => {
+    if (err) {
+        fastify.log.error(err);
+        process.exit(1);
+    }
+    console.log(`server running at ${fastify.server.address().port}`);
+});
